@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <meta name="description" content="ECE 5725 Final Project: Freestyle Pi">
+  <meta name="author" content="">
+
+  <title>Freestyle Pi</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+  <!-- <link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet"> -->
+
+  <!-- Custom styles for this template -->
+  <link href="https://fonts.googleapis.com/css?family=Dancing+Script|Source+Sans+Pro|Ubuntu+Mono&display=swap"
+    rel="stylesheet">
+
+  <link href="dist/css/prism.css" rel="stylesheet">
+  <link href="starter-template.css" rel="stylesheet">
+
+  <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+  <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+  <!-- <script src="../../assets/js/ie-emulation-modes-warning.js"></script> -->
+
+  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <!-- <nav class="navbar navbar-inverse navbar-fixed-top"> -->
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+          aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Freestyle Pi</a>
+      </div>
+      <div id="navbar" class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="#">Home</a></li>
+          <li><a href="#intro">Introduction</a></li>
+          <li><a href="#obj">Project Objective</a></li>
+          <li><a href="#design">Design</a></li>
+          <li><a href="#drawings">Drawings</a></li>
+          <li><a href="#result">Result</a></li>
+        </ul>
+      </div>
+      <!--/.nav-collapse -->
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <div class="starter-template">
+      <img src="pics/banner.jpg" alt="" style="width: 100%;">
+      <!-- <h1>Awesome ECE5725 Project</h1>
+      <p class="lead">Really Awesome<br>A Project By Xin Fu & Yangmengyuan Zhao.</p> -->
+    </div>
+
+    <hr>
+    <div class="center-block" style="text-align: center;">
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/vOOq4nTg-G8" frameborder="0"
+        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      <h4 style="text-align:center;">Demonstration Video</h4>
+    </div>
+
+    <hr id="intro">
+
+    <div style="text-align:center;">
+      <h2>Introduction</h2>
+      <p style="text-align: justify;">
+        Our design is a Raspberry Pi-based intelligent assistant that can do freestyle rapping about a certain topic
+        given by the voice command from the user. It will automatically detect the trigger word(its name "Andrew"),
+        transform voice collected from microphone to text, and then understand the topic from a natural language
+        sentence, generate related lyrics and background beat, and eventually play them with the speaker. We also
+        implemented the screen display, which could show the dialogue content and signal waves as background. And
+        finally we optimize the dialogue-based interaction so that it will speak out the current weather of a given
+        location. It is an embedded device with microphone and speaker as input and output, and can interact with users
+        using voice and language processing algorithms.
+      </p>
+    </div>
+
+    <hr id='obj'>
+
+    <div class="row">
+      <div class="col-md-4" style="text-align:center;">
+        <img class="img-rounded" src="pics/pitft.jpg" alt="Generic placeholder image" width="240">
+      </div>
+      <div class="col-md-8" style="font-size:1em; margin-top: -8px;">
+        <h2>Project Objective:</h2>
+        <ul>
+          <li>Wait quietly and wake up when its name is called</li>
+          <li>Understand your voice command and make reactions accordingly</li>
+          <li>Generate hip-hop lyrics on-the-fly and rap it with the machine-generated music</li>
+        </ul>
+      </div>
+    </div>
+
+    <hr id='design'>
+
+    <div style="text-align:center;">
+      <h2>Design & Testing</h2>
+      <p style="text-align: left;">
+        <ol style="text-align:justify">
+          <li><strong>Wake word detection</strong><br />
+            Build up a wake word listener to continually listen to sounds around the device, and activate when the
+            sounds or speech match a wake word. First, we use chunking to calculate the MFCC features of the speech
+            real-time, and then input the generated features into a neural network consisting of 20 gated recurrent
+            units (GRUs), finally making predictions every chunk to check whether it is the wake word or not.
+            <p style="text-align: center;"><img src="pics/wake_word.jpg" alt="" style="max-width:300px;"></p>
+
+          </li>
+
+          <li><strong>Speech to Text & Text to Speech</strong><br />
+            Once the wake word is detected, the speech-to-text function will be triggered to record and convert voice to
+            text. Considering the performance of Raspberry Pi, we chose to use mature online service to do the
+            recognition. By continuously sending the audio chunks to the Google Cloud Speech API, we are able to get the
+            real-time recognized text.
+
+            <p style="text-align: center;"><img src="pics/speech.jpg" alt="" style="max-height:220px;"></p>
+
+          </li>
+
+
+          <li><strong>Topic understanding</strong><br />
+            With the text recognized, we need the Raspberry Pi to understand the content of the text, so that it can
+            make correct reactions to the user’s command. We make the use of Microsoft Azure Language Understanding
+            service (LUIS) to extract user’s intent and the corresponding entities from the recognized sentence. In our
+            system, we defined two major intents: “Freestyle”, “Weather” and for other topics, currently we just ignore
+            them. With LUIS, we are able to get the entities in the sentence, for example, if we ask about the weather
+            in a specific city, the city name will be returned as an entity. So we are able to flexibly process these
+            intents.
+
+            <p style="text-align: center;"><img src="pics/understanding.jpg" alt="" style="max-height:300px;"></p>
+          </li>
+
+
+          <li><strong>Rap lyrics generation</strong><br />
+            In general, we used a character-level Recurrent Neural Networks with LSTM unit. We chose character-level
+            representation because:
+            <ul>
+              <li>
+                it does not require tokenization as a preprocessing step
+              </li>
+              <li>
+                it does not require unknown word handling
+              </li>
+              <li>
+                it could generate on a comparatively small vocabulary, less memory
+              </li>
+              <li>
+                it could mimic grammatically correct sequences for a wide range of languages
+              </li>
+              <li>
+                it also include punctuations to make pause of lyrics more natural
+              </li>
+            </ul>
+
+            We chose the LSTM (long short-term memory) unit because it could take more context into consideration and
+            avoid vanishing gradient at the same time.
+
+            <p style="text-align: center;"><img src="pics/lstm.jpg" alt="" style="max-height:300px;"></p>
+
+            We picked Eminem as the imitation object of our model because according to a study(conducted by lyrics site
+            Musixmatch), Eminem has the largest vocabulary in the music industry. I found a lyrics dataset scraped from
+            LyricsFreak, which includes 70 Eminem songs.
+
+            <p style="text-align: center;"><img src="pics/eminem.png" alt="" style="max-height:200px;"></p>
+
+            We first combine those entries into a large 200k-character string with 50 unique characters, then cut the
+            text into semi-redundant sequences of characters and the vectorize them into the input sequence, the output
+            sequence is the next character of this sequence in the corpus. <br />
+            The model is built on keras example, consists of a linear stack of long short-term memory layer and a
+            regular fully-connected neural network layer. Because of the limit of computational resources, each epoch
+            takes about 1 minute. The model is trained 1200 times and this part cost us 30 hours in total.
+
+            <p style="text-align: center;"><img src="pics/model_beat.jpg" alt="" style="max-height:300px;"></p>
+
+          </li>
+
+
+          <li><strong>Beat generation</strong><br />
+
+            The deeping learning AI team provided a dataset, which preprocessed the musical data so that we could render
+            it in terms of musical "values." Each value can be considered as a note, which comprises a pitch and
+            duration. <br />
+            Similar to the text generation model, the beat generation is also learnt by a LSTM network. The architecture
+            of the model is illustrated in the figure below. The difference between the lyrics model and the beat model
+            is
+            the first input is randomly generated rather than given by the user.
+
+          </li>
+        </ol>
+      </p>
+    </div>
+
+    <hr id='issues'>
+
+    <div style="text-align:center;">
+      <h2>Issues</h2>
+      <ul style="text-align:justify">
+        <li>
+          <strong>Audio Driver issue:</strong> Although we can directly use the built-in audio players like "aplay" to
+          play raw audio files. Our goal is to use Python code to dynamically record and play the sound chunks. The
+          library we use, PyAudio, cannot use the built-in 3.5mm headphone jack and the USB microphone at the same time.
+          We fix this by switching the playing part to the pyalsaaudio library.
+        </li>
+        <li>
+          <strong>Stream file conversion:</strong> The generated beat is saved in the music stream originally. There is
+          no straight function or package to save stream as ‘.wav’ files directly, so we saved it as ‘.midi’ files first
+          and then transfer them to ‘.wav’ files that are convenient to play on Raspberry Pi.
+        </li>
+        <li>
+          <strong>Explicit lyrics filter:</strong> We didn’t preprocess the 200,000 characters before training the model
+          so the generated lyrics inherent some bad words from Eminem’s songs. We tried to replace the bad words we
+          could imagine with ‘love’ but failed to enumerate them.
+
+        </li>
+      </ul>
+    </div>
+
+    <hr id='drawings'>
+
+    <div style="text-align:center;">
+      <h2>Drawings</h2>
+      <div style="text-align:center;">
+        <!-- <p style="text-align: center;"><img src="/pics/drawing_1.jpg" alt="" style="max-width:500px; opacity: 0.6;"></p>
+        <h4>Early sketch </h4> -->
+        <p style="text-align: center;"><img src="pics/drawing_2.jpg" alt="" style="max-height:400px;"></p>
+        <h4>Final demo</h4>
+      </div>
+
+    </div>
+
+    <hr id='result'>
+
+    <div style="text-align:center;">
+      <h2>Result</h2>
+      <p style="text-align: justify;">We basically followed our expected time schedule and accomplished the basic
+        functions we proposed in the first proposal. In addition, this freestyle Pi can implement some dialogue-based
+        interactions, for example, it can tell you the weather of a given location and the most handsome man in the
+        world, so we consider this project as a success. Future work is needed to make this voice assistant more
+        intelligent.
+      </p>
+      <p style="text-align: center;"><img src="pics/timeline.png" alt="" style="max-height:400px;"></p>
+    </div>
+
+    <hr>
+
+    <div style="text-align:center;">
+      <h2>Future Work</h2>
+      <ul style="text-align:justify">
+        <li>
+          The lyrics generation starts with the given topic word, so actually we are not freestyle about the topic. We
+          plan to use words that are close to the topic in word embeddings to compute the lyrics rather than the
+          single topic word.
+        </li>
+        <li>
+          Character-level language models require more training epochs and larger corpus to make its output text
+          sequence more natural.
+        </li>
+        <li>
+          We could further employ a plug-in board for beat generation. Taking user input as the first token of the
+          beat generation network.
+        </li>
+      </ul>
+    </div>
+
+    <hr>
+
+
+    <div class="row" style="text-align:center;">
+      <h2>Work Distribution</h2>
+      <div style="text-align:center;">
+        <img class="img-rounded" src="pics/group.jpg" alt="Generic placeholder image" style="width:80%;">
+        <h4>Project group picture</h4>
+      </div>
+      <div class="col-md-6" style="font-size:16px">
+        <img class="img-rounded" src="pics/profile_XF.jpg" alt="Generic placeholder image" width="240" height="240">
+        <h3>Xin <Figure></Figure>
+        </h3>
+        <p class="lead">xf78@cornell.edu</p>
+        <p>Designed the overall software architecture (Just being himself).
+      </div>
+      <div class="col-md-6" style="font-size:16px">
+        <img class="img-rounded" src="pics/profile_YZ.jpg" alt="Generic placeholder image" width="240" height="240">
+        <h3>Yangmengyuan Zhao</h3>
+        <p class="lead">yz2453@cornell.edu</p>
+        <p>Lyrics and Beat Generation</p>
+        <p>Figure Design and Vedio Edition</p>
+      </div>
+    </div>
+
+    <hr>
+    <div>
+      <h2>Project Parts</h2>
+      <table>
+        <tr>
+          <th>Parts</th>
+          <th>From</th>
+          <th>Cost</th>
+        </tr>
+        <tr>
+          <td>Raspberry Pi</td>
+          <td>Lab</td>
+          <td>$0.00</td>
+        </tr>
+        <tr>
+          <td>Speaker</td>
+          <td>Lab</td>
+          <td>$0.00</td>
+        </tr>
+        <tr>
+          <td>PS3 Eye Microphone</td>
+          <td>Amazon</td>
+          <td>$8.53</td>
+        </tr>
+      </table>
+
+
+      <h3>Total: $8.53</h3>
+    </div>
+    <hr>
+
+    <div>
+      <h2>Acknowledgements</h2>
+      We really appreciate everyone who has helped us building this project:
+      <ul style="text-align:justify;">
+        <li>Prof. Joseph F. Skovira</li>
+        <li>Course TAs: Canhui Yu </li>
+        <li>Course TAs: Rohit Krishnakumar </li>
+      </ul>
+    </div>
+
+    <div>
+      <h2>References</h2>
+      <p style="font-size: small;">
+        <a href="http://lab.musixmatch.com/largest_vocabulary/">The Largest Vocabulary In Music</a><br>
+
+        <a href="https://github.com/keras-team/keras/blob/master/examples/lstm_text_generation.py">Keras LSTM
+          example</a><br>
+
+        <a href="https://www.coursera.org/learn/nlp-sequence-models/home/week/1">Deep Learning AI Specialization</a><br>
+
+        <a href="https://github.com/larsimmisch/pyalsaaudio/">Pyalsaaudio Library</a><br>
+
+        <a href="https://github.com/MycroftAI/mycroft-precise">Mycroft-precise</a><br>
+      </p>
+    </div>
+
+    <hr>
+
+    <div class="row">
+      <h2>Code Appendix</h2>
+      <pre><code class="language-python">
+    import sys
+    import time
+    import random
+    import queue
+    import threading
+    
+    from termcolor import cprint
+    from utils.audio import ResumableMicrophoneStream
+    from utils.detect_queue import DetectQueue
+    from utils.credentials import init_credentials
+    
+    from trigger_detector import TriggerDetector
+    
+    from speech_to_text import SpeechToText
+    from lang_understand import LangUnderstand
+    from text_to_speech import TextToSpeech
+    from lyrics_generator import LyricsGenerator
+    
+    from tft_display import TFTDisplay
+    
+    # Audio recording parameters
+    SAMPLE_RATE = 16000
+    CHUNK_SIZE = int(SAMPLE_RATE / 10)  # 100ms
+    STREAM_LIMIT = 5000
+    
+    
+    class Andrew(object):
+        """the rap voice assisstant
+        """
+        def __init__(self, detect_model="data/andrew2.net",
+                            lyrics_model="data/keras_model_1200.h5",
+                            lyrics_chars="data/chars.pkl"):
+            # microphone
+            self.mic = ResumableMicrophoneStream(SAMPLE_RATE, CHUNK_SIZE)
+    
+            # wake word detector
+            self.detector = TriggerDetector(detect_model)
+    
+            # speech and language services
+            self.speech_client = SpeechToText()
+            self.luis = LangUnderstand()
+            self.tts = TextToSpeech()
+    
+            # lyrics generator model
+            self.lyrics_gen = LyricsGenerator(lyrics_model, lyrics_chars)
+    
+            self.pred_queue = DetectQueue(maxlen=5)
+            self.is_wakeup = False
+    
+            # pytft display
+            self.tft = TFTDisplay()
+            self.tft_queue = queue.Queue()
+            self.tft_thread = threading.Thread(target=self.tft_manage, args=())
+            self.tft_thread.daemon = True
+            self.tft_thread.start()
+    
+            self.notify("hi_there")
+    
+    
+        def notify(self, topic="hi_there", is_async=False, audio_path="data/audio"):
+            # Notify with local preset audio files
+            from os.path import join, isfile
+            audio_file = join(audio_path, f"{topic}.wav")
+            if not isfile(audio_file):
+                return
+    
+            self.tts.play_file(audio_file, is_async)
+    
+    
+        def generate_rap(self, topic="", beat_path="data/beat"):
+            """Generate rap and play
+            """
+            tts = self.tts
+            lyrics_gen = self.lyrics_gen
+    
+            response = tts.generate_speech(f"hey, I can rap about {topic}")
+            tts.play(response, True)
+    
+            # Generate based on topic
+            lyrics_output = lyrics_gen.generate(topic)
+    
+            # Generate speech
+            lyrics_speech = tts.generate_speech(lyrics_output)
+    
+            # Select beat
+            beat_index = random.randint(0, 20)
+    
+            # Play beat and lyrics
+            tts.play_file(f'{beat_path}/beat_{beat_index}.wav', True)
+            tts.play(lyrics_speech)
+    
+        def get_weather_message(self, city="Ithaca"):
+            import requests, json, os
+            api_key = os.getenv('WEATHER_APIKEY')
+            base_url = "https://api.openweathermap.org/data/2.5/weather?"
+            city_name = f"{city},us"
+            complete_url = f"{base_url}q={city_name}&units=imperial&APPID={api_key}"
+            try:
+                response = requests.get(complete_url)
+                res = response.json()
+                msg_weather = f"Today, it's {res['weather'][0]['description']} in {city}. "
+                msg_temp = f"The temperature is {int(res['main']['temp'])} degrees."
+                return msg_weather + msg_temp
+            except:
+                pass
+    
+            return ""
+    
+    
+        def intent_recognize(self, text=""):
+            """Recognize intent
+            """
+            luis = self.luis
+            tts = self.tts
+    
+            # Get result from language understanding engine
+            luis_result = luis.predict(text)
+            intent = luis_result.top_scoring_intent.intent
+    
+            if intent == "Freestyle":
+                entities = luis_result.entities
+                entity_topic = "rap"
+                if (len(entities) > 0):
+                    entity = entities[0]
+                    cprint(f'The topic is {entity.entity}', 'cyan')
+                    entity_topic = entity.entity
+                self.generate_rap(entity_topic)
+    
+            elif intent == "Weather":
+                response = tts.generate_speech("I will tell you the weather in Ithaca.")
+                tts.play(response)
+    
+                weather = self.get_weather_message()
+                response = tts.generate_speech(weather)
+                tts.play(response)
+    
+            else:
+                self.notify("sorry")
+    
+    
+        def tft_manage(self):
+            """Manage TFT display through state
+            """
+            self.tft.display_text("Andrew is waking up")
+            status = {'state': 'None'}
+    
+            while True:
+                if status['state'] is 'wait':
+                    self.tft.display_wave()
+    
+                elif status['state'] is 'listen':
+                    self.tft.display_wave((0, 255, 0))
+    
+                # Update the status
+                try:
+                    update = self.tft_queue.get(block=False)
+                    if update is not None:
+                        status = update
+    
+                except queue.Empty:
+                    continue
+    
+    
+        def start(self):
+            """Start listening and interacting
+            """
+            tft = self.tft
+            tts = self.tts
+    
+            # Init stream
+            with self.mic as stream:
+    
+                self.tft_queue.put({'state': 'listen'})
+    
+                while True:
+                    if not self.is_wakeup:
+                        stream.closed = False
+    
+                        while not stream.closed:
+    
+                            stream.audio_input = []
+                            audio_gen = stream.generator()
+    
+                            for chunk in audio_gen:
+                                if not self.is_wakeup:
+    
+                                    prob = self.detector.get_prediction(chunk)
+    
+                                    self.pred_queue.append(prob > 0.6)
+                                    print('!' if prob > 0.6 else '.', end='', flush=True)
+    
+                                    if (self.pred_queue.count >= 2):
+                                        self.notify("hi")
+                                        cprint(' Trigger word detected! \n', 'magenta')
+                                        self.pred_queue.clear()
+                                        self.is_wakeup = True
+                                        stream.pause()
+                                        break
+                    else:
+                        cprint('Speech to text\n', 'green')
+    
+                        time.sleep(1)
+                        stream.closed = False
+    
+                        try:
+                            voice_command = self.speech_client.recognize(stream)
+    
+                            cprint(f'{voice_command}\n', 'yellow')
+                            cprint('Recognition ended...\n', 'red')
+    
+                            stream.pause()
+    
+                            #tft.display_text(f'"{voice_command}"')
+    
+                            if ("goodbye" in voice_command):
+                                self.notify("see_you")
+                                exit()
+    
+                            if ("sorry" in voice_command):
+                                self.notify("its_ok")
+    
+                            else:
+                                cprint('Recognize intents...', 'cyan')
+                                self.intent_recognize(voice_command)
+    
+                        except Exception as e:
+                            cprint(f'Error: {e}', 'red')
+    
+                        self.is_wakeup = False
+    
+    
+    def main():
+    
+        # set credentials for cloud services
+        init_credentials()
+    
+        # init and start andrew
+        andrew = Andrew()
+        andrew.start()
+    
+    
+    if __name__ == "__main__":
+        main()
+                
+              </code></pre>
+    </div>
+
+    <footer style="margin: 1em 0em; color: gray;">
+      © 2019. All rights reserved.
+    </footer>
+
+  </div><!-- /.container -->
+
+
+
+
+  <!-- Bootstrap core JavaScript
+    ================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+  <script src="dist/js/bootstrap.min.js"></script>
+  <script src="dist/js/prism.js"></script>
+  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+  <!-- <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script> -->
+</body>
+
+</html>
