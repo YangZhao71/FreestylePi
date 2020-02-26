@@ -1,0 +1,11 @@
+numpy==1.17.4
+scipy==1.3.3
+tensorflow==1.13.2
+keras==2.2.4
+
+pyaudio
+sonopy
+
+google-cloud-speech
+google-cloud-texttospeech
+azure-cognitiveservices-language-luis==0.3.1
